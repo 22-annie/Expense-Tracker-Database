@@ -1,71 +1,75 @@
-const form = document.getElementById("transactionForm");
-const table = document.getElementById("transactionTable");
+let expenses = [];
 
-// Load all transactions
-function loadTransactions() {
 
-    fetch("http://localhost:3000/transactions")
-        .then(res => res.json())
-        .then(data => {
 
-            table.innerHTML = "";
+function addExpense(){
 
-            data.forEach(transaction => {
+    let title = document.getElementById("title").value;
 
-                table.innerHTML += `
-                    <tr>
-                        <td>${transaction.type}</td>
-                        <td>${transaction.category}</td>
-                        <td>${transaction.amount}</td>
-                        <td>${transaction.description}</td>
-                        <td>${transaction.date}</td>
-                    </tr>
-                `;
+    let amount = document.getElementById("amount").value;
 
-            });
 
-        });
+    if(title==="" || amount==="")
+    {
+        alert("Please fill all fields");
+        return;
+    }
 
-}
 
-// Add transaction
-form.addEventListener("submit", function (e) {
+    let expense={
 
-    e.preventDefault();
-
-    const transaction = {
-
-        amount: document.getElementById("amount").value,
-        category: document.getElementById("category").value,
-        type: document.getElementById("type").value,
-        description: document.getElementById("description").value,
-        date: document.getElementById("date").value
+        title:title,
+        amount:Number(amount)
 
     };
 
-    fetch("http://localhost:3000/add", {
 
-        method: "POST",
+    expenses.push(expense);
 
-        headers: {
-            "Content-Type": "application/json"
-        },
 
-        body: JSON.stringify(transaction)
+    displayExpenses();
 
-    })
-    .then(res => res.json())
-    .then(data => {
 
-        alert(data.message);
+    document.getElementById("title").value="";
+    document.getElementById("amount").value="";
 
-        form.reset();
+}
 
-        loadTransactions();
+
+
+
+function displayExpenses(){
+
+    let list=document.getElementById("expenseList");
+
+    list.innerHTML="";
+
+
+    let total=0;
+
+
+    expenses.forEach(function(expense){
+
+
+        total += expense.amount;
+
+
+        let li=document.createElement("li");
+
+
+        li.innerHTML=
+        expense.title + " - ৳ " + expense.amount;
+
+
+        list.appendChild(li);
+
 
     });
 
-});
 
-// Show transactions when page loads
-loadTransactions();
+
+    document.getElementById("total").innerHTML=
+    "৳ " + total;
+
+
+}
